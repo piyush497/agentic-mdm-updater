@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: java-mdm-api-local
+# Local profile: no external brokers, in-memory events only
+logging:
+  level:
+    root: INFO
+    com.example.mdm: DEBUG
+server:
+  port: 8080

@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: java-mdm-api
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:mdm}
+    username: ${POSTGRES_USER:mdm}
+    password: ${POSTGRES_PASSWORD:mdm}
+  flyway:
+    enabled: true
+    schemas: ops,catalog,mdm
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+server:
+  port: 8080

@@ -1,0 +1,32 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: java-mdm-api-prod
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:mdm}
+    username: ${POSTGRES_USER:mdm}
+    password: ${POSTGRES_PASSWORD:mdm}
+  flyway:
+    enabled: true
+    schemas: ops,catalog,mdm
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${AZURE_AD_ISSUER_URI:}
+          # Optional: If your issuer does not expose OIDC metadata, specify jwk set uri explicitly
+          # jwk-set-uri: ${AZURE_AD_JWK_SET_URI:}
+
+azure:
+  servicebus:
+    connection-string: ${AZURE_SERVICEBUS_CONNECTION_STRING:}
+    topic: ${AZURE_SERVICEBUS_TOPIC:cr-events}
+
+logging:
+  level:
+    root: INFO
+    com.example.mdm: INFO

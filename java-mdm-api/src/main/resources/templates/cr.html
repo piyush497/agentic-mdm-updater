@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CR Approver</title>
+  <style>
+    body { font-family: system-ui, Arial, sans-serif; margin: 2rem; }
+    .card { border: 1px solid #ddd; border-radius: 8px; padding: 1rem; max-width: 720px; }
+    .row { margin: .5rem 0; }
+    button { padding: .5rem 1rem; margin-right: .5rem; }
+    #result { margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Change Request</h2>
+    <div class="row">CR ID: <strong th:text="${crId}"></strong></div>
+    <div class="row">
+      <button onclick="approve()">Approve</button>
+      <button onclick="applyCr()">Apply</button>
+    </div>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    const crId = /*[[${crId}]]*/ '';
+    async function approve(){
+      const res = await fetch(`/cr/${crId}/approve`, {method:'POST', headers:{'Content-Type':'application/json'}, body:'{}'});
+      const data = await res.json();
+      document.getElementById('result').innerText = 'Approved: ' + JSON.stringify(data);
+    }
+    async function applyCr(){
+      const res = await fetch(`/cr/${crId}/apply`, {method:'POST', headers:{'Idempotency-Key': crypto.randomUUID()}});
+      const data = await res.json();
+      document.getElementById('result').innerText = 'Applied: ' + JSON.stringify(data);
+    }
+  </script>
+</body>
+</html>
