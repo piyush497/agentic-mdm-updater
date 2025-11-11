@@ -1,0 +1,80 @@
+<mxfile host="app.diagrams.net" modified="2025-11-11T02:40:00.000Z" agent="Cascade" version="22.0.3">
+  <diagram id="appArch" name="Application Architecture">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1920" pageHeight="1080" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- Zones -->
+        <mxCell id="zoneClient" value="Client Zone" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="40" y="60" width="260" height="240" as="geometry"/>
+        </mxCell>
+        <mxCell id="zoneAgent" value="Python Agent (LangChain)" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="320" y="60" width="360" height="320" as="geometry"/>
+        </mxCell>
+        <mxCell id="zoneApi" value="Java MDM API (Spring Boot)" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="700" y="60" width="420" height="360" as="geometry"/>
+        </mxCell>
+        <mxCell id="zoneInfra" value="Infra / Data" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="1140" y="60" width="360" height="360" as="geometry"/>
+        </mxCell>
+
+        <!-- Client Zone Items -->
+        <mxCell id="ui" value="Web Chat UI (MSAL when prod)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="zoneClient">
+          <mxGeometry x="20" y="40" width="200" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Agent Zone Items -->
+        <mxCell id="router" value="LangChain Agent (Functions)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="zoneAgent">
+          <mxGeometry x="20" y="40" width="260" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="tools" value="Tools: validate, create_cr, status" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="zoneAgent">
+          <mxGeometry x="20" y="120" width="260" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="llmLocal" value="LLM: Ollama (local)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="zoneAgent">
+          <mxGeometry x="20" y="200" width="260" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="llmAzure" value="LLM: Azure OpenAI (prod)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="zoneAgent">
+          <mxGeometry x="20" y="260" width="260" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- API Zone Items -->
+        <mxCell id="controller" value="Controllers: /cr, /validate, /catalog" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="zoneApi">
+          <mxGeometry x="20" y="40" width="320" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="service" value="Service: ChangeRequestService" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="zoneApi">
+          <mxGeometry x="20" y="120" width="320" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="repo" value="Repository: ChangeRequestRepository (JDBC)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="zoneApi">
+          <mxGeometry x="20" y="200" width="320" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="eventsAb" value="Events: CrEvents (Local/Cloud impl)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="zoneApi">
+          <mxGeometry x="20" y="280" width="320" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Infra Items -->
+        <mxCell id="pg" value="Postgres (ops, catalog, mdm)" style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#cce5ff;strokeColor=#4a86e8;" vertex="1" parent="zoneInfra">
+          <mxGeometry x="30" y="50" width="260" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="sb" value="Azure Service Bus (Topic: cr-events) [prod]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="zoneInfra">
+          <mxGeometry x="30" y="150" width="260" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="aad" value="Azure AD (OAuth2 Resource Server) [prod]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="zoneInfra">
+          <mxGeometry x="30" y="230" width="260" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Edges -->
+        <mxCell id="c2a" edge="1" parent="1" source="ui" target="router" style="endArrow=block;"/>
+        <mxCell id="a2api" edge="1" parent="1" source="tools" target="controller" style="endArrow=block;"/>
+        <mxCell id="api2svc" edge="1" parent="1" source="controller" target="service" style="endArrow=block;"/>
+        <mxCell id="svc2repo" edge="1" parent="1" source="service" target="repo" style="endArrow=block;"/>
+        <mxCell id="repo2db" edge="1" parent="1" source="repo" target="pg" style="endArrow=block;"/>
+        <mxCell id="svc2events" edge="1" parent="1" source="service" target="eventsAb" style="endArrow=block;"/>
+        <mxCell id="events2sb" edge="1" parent="1" source="eventsAb" target="sb" style="dashed=1;endArrow=block;"/>
+        <mxCell id="auth" edge="1" parent="1" source="aad" target="controller" style="dashed=1;endArrow=block;"/>
+        <mxCell id="agent2llm1" edge="1" parent="1" source="router" target="llmLocal" style="dashed=1;endArrow=block;"/>
+        <mxCell id="agent2llm2" edge="1" parent="1" source="router" target="llmAzure" style="dashed=1;endArrow=block;"/>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

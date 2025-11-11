@@ -1,0 +1,44 @@
+<mxfile host="app.diagrams.net" modified="2025-11-11T02:45:00.000Z" agent="Cascade" version="22.0.3">
+  <diagram id="seqCr" name="Sequence - CR Flow">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1920" pageHeight="1080" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- Lifelines -->
+        <mxCell id="cust" value="Customer" style="shape=umlLifeline;perimeter=lifelinePerimeter;container=1;collapsible=0;dropTarget=0;" vertex="1" parent="1">
+          <mxGeometry x="60" y="60" width="120" height="600" as="geometry"/>
+        </mxCell>
+        <mxCell id="chat" value="Web Chat UI" style="shape=umlLifeline;perimeter=lifelinePerimeter;container=1;collapsible=0;dropTarget=0;" vertex="1" parent="1">
+          <mxGeometry x="260" y="60" width="120" height="600" as="geometry"/>
+        </mxCell>
+        <mxCell id="agent" value="Agent (LangChain)" style="shape=umlLifeline;perimeter=lifelinePerimeter;container=1;collapsible=0;dropTarget=0;" vertex="1" parent="1">
+          <mxGeometry x="460" y="60" width="140" height="600" as="geometry"/>
+        </mxCell>
+        <mxCell id="api" value="Java MDM API" style="shape=umlLifeline;perimeter=lifelinePerimeter;container=1;collapsible=0;dropTarget=0;" vertex="1" parent="1">
+          <mxGeometry x="700" y="60" width="140" height="600" as="geometry"/>
+        </mxCell>
+        <mxCell id="db" value="Postgres DB" style="shape=umlLifeline;perimeter=lifelinePerimeter;container=1;collapsible=0;dropTarget=0;" vertex="1" parent="1">
+          <mxGeometry x="940" y="60" width="140" height="600" as="geometry"/>
+        </mxCell>
+        <mxCell id="bus" value="Service Bus (prod)" style="shape=umlLifeline;perimeter=lifelinePerimeter;container=1;collapsible=0;dropTarget=0;" vertex="1" parent="1">
+          <mxGeometry x="1180" y="60" width="160" height="600" as="geometry"/>
+        </mxCell>
+
+        <!-- Messages -->
+        <mxCell id="m1" value="1. message" style="edgeStyle=elbowEdgeStyle;endArrow=block;" edge="1" parent="1" source="cust" target="chat"/>
+        <mxCell id="m2" value="2. send to /chat" style="edgeStyle=elbowEdgeStyle;endArrow=block;" edge="1" parent="1" source="chat" target="agent"/>
+        <mxCell id="m3" value="3. validate()" style="edgeStyle=elbowEdgeStyle;dashed=1;endArrow=block;" edge="1" parent="1" source="agent" target="api"/>
+        <mxCell id="m4" value="4. create_cr(dryRun)" style="edgeStyle=elbowEdgeStyle;endArrow=block;" edge="1" parent="1" source="agent" target="api"/>
+        <mxCell id="m5" value="5. insert CR" style="edgeStyle=elbowEdgeStyle;endArrow=block;" edge="1" parent="1" source="api" target="db"/>
+        <mxCell id="m6" value="6. CR_CREATED event" style="edgeStyle=elbowEdgeStyle;dashed=1;endArrow=block;" edge="1" parent="1" source="api" target="bus"/>
+        <mxCell id="m7" value="7. approve()" style="edgeStyle=elbowEdgeStyle;endArrow=block;" edge="1" parent="1" source="chat" target="api"/>
+        <mxCell id="m8" value="8. update status APPROVED" style="edgeStyle=elbowEdgeStyle;endArrow=block;" edge="1" parent="1" source="api" target="db"/>
+        <mxCell id="m9" value="9. CR_APPROVED event" style="edgeStyle=elbowEdgeStyle;dashed=1;endArrow=block;" edge="1" parent="1" source="api" target="bus"/>
+        <mxCell id="m10" value="10. apply()" style="edgeStyle=elbowEdgeStyle;endArrow=block;" edge="1" parent="1" source="chat" target="api"/>
+        <mxCell id="m11" value="11. update status APPLIED" style="edgeStyle=elbowEdgeStyle;endArrow=block;" edge="1" parent="1" source="api" target="db"/>
+        <mxCell id="m12" value="12. CR_APPLIED event" style="edgeStyle=elbowEdgeStyle;dashed=1;endArrow=block;" edge="1" parent="1" source="api" target="bus"/>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
