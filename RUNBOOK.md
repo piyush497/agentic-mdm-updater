@@ -3,8 +3,8 @@
 This runbook explains how to run the system locally (no Azure required) and how to prepare/run with Azure infrastructure (Azure OpenAI, Azure AD, Service Bus) when you are ready.
 
 Components:
-- pythen-agent-client: FastAPI + LangChain agent (Stub/Ollama/Azure LLM)
-- java-mdm-api: Spring Boot API (Gradle) with Flyway migrations and minimal Approver UI
+- pythen-agent-client: FastAPI + LangChain agent (tools call Java API)
+- java-mdm-api: Spring Boot API (Gradle) with Flyway migrations and minimal Approver UI (local only)
 - Postgres: via docker-compose
 
 ---
@@ -32,8 +32,9 @@ Ports used by default:
 - docker-compose.yml: Postgres service
 - RUNBOOK.md: This guide
 - pythen-agent-client/
-  - app/main.py: FastAPI app with /chat endpoint
-  - app/llm.py: LLM dispatcher (Stub, Ollama, Azure)
+  - app/main.py: FastAPI app with /chat endpoint (uses LangChain agent)
+  - app/agent.py: LangChain agent, tools (validate/create_cr/status), LLM selection
+  - app/llm.py: minimal fallback when agent isn't configured
   - requirements.txt
 - java-mdm-api/
   - build.gradle, settings.gradle (Gradle build)
@@ -79,7 +80,7 @@ What happens:
   - Approver UI: http://localhost:8080/ui/cr/{CR_ID}
   - In-memory event logger prints CR lifecycle events to logs
 
-### 3.3 Run Python agent (Stub mode by default)
+### 3.3 Run Python agent (LangChain; Stub fallback by default)
 From `pythen-agent-client` directory:
 
 ```
@@ -131,7 +132,7 @@ Content-Type: application/json
   - Open `http://localhost:8080/ui/cr/{cr_id}` and click Approve/Apply
 
 Notes:
-- Controller logic is currently stubbed: the APIs return simulated statuses and events while the DB schema and seed data are real.
+- Java CR endpoints are stubbed; DB schema and seed data are real. The agent uses tools to call Java API.
 
 ---
 
@@ -152,6 +153,8 @@ Python Agent:
 - USE_AZURE_OPENAI (true|false, default: false)
 - AZURE_OPENAI_DEPLOYMENT (required when USE_AZURE_OPENAI=true)
 - AZURE_OPENAI_API_VERSION (default: 2024-08-01-preview)
+- AZURE_OPENAI_ENDPOINT (required when USE_AZURE_OPENAI=true)
+- AZURE_OPENAI_API_KEY (required when USE_AZURE_OPENAI=true)
 
 ---
 
@@ -185,14 +188,12 @@ When ready to integrate Azure services, plan for these:
 
 ---
 
-## 6) Running With Azure (Planned Profiles)
+## 6) Running With Azure (prod profile)
 
-We provide a `prod` profile for Azure-backed runs (you can also add `dev` similarly):
+We provide a `prod` profile for Azure-backed runs:
 
-- application-dev.yml (to be added):
-  - Configure Spring Security OAuth2 Resource Server (Azure AD issuer)
-  - Configure Azure Service Bus publisher (connection string/topic)
-  - Keep DB connection to a managed Postgres or your local Postgres as needed
+- Security (OAuth2 Resource Server): set `AZURE_AD_ISSUER_URI` (and optional `AZURE_AD_JWK_SET_URI`)
+- Azure Service Bus events: set `AZURE_SERVICEBUS_CONNECTION_STRING` and optionally `AZURE_SERVICEBUS_TOPIC`
 
 Run command (example):
 
@@ -206,7 +207,8 @@ Python agent with Azure OpenAI (example):
 $env:JAVA_API_URL = "https://<your-api-host>"
 $env:USE_AZURE_OPENAI = "true"
 $env:AZURE_OPENAI_DEPLOYMENT = "<your-deployment>"
-# Also set any required Azure OpenAI endpoint/key environment variables per your setup
+$env:AZURE_OPENAI_ENDPOINT = "https://<your-openai>.openai.azure.com"
+$env:AZURE_OPENAI_API_KEY = "<your-key>"
 uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
 
